@@ -11,7 +11,7 @@ class IterSite:
                 print(f'{link_site} нет постов к публикации')
                 continue
 
-            
+
 
             print(link_site)
 
