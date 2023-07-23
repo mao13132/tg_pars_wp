@@ -13,4 +13,7 @@ class StartIterTgChat:
 
             post_dict = await IterChat(self.telegram_core).get_posts(job)
 
+            if not post_dict:
+                return False
+
         return self.job_dict

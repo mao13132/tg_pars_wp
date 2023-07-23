@@ -9,7 +9,14 @@ class IterChat:
         job['posts'] = []
 
         for link_chat in job["channels"]:
+            if link_chat == '':
+                print(f'Не указан телеграм канал донор')
+                continue
+
             id_chat = await self.telegram_core.get_id_chat(link_chat)
+
+            if not id_chat:
+                return False
 
             print(f'\n{datetime.now().strftime("%H:%M:%S")} Получаю сообщения из чата: {link_chat}')
 

@@ -205,60 +205,24 @@ class MonitoringTelegram:
 
         return good_post
 
-    # async def loop_start_check(self, id_chat, link_chat):
-    #     count = 0
-    #     try_count = 3
-    #
-    #     while True:
-    #         count += 1
-    #         if count > try_count:
-    #             print(f'{datetime.now().strftime("%H:%M:%S")} Не смог промониторить чат "{id_chat}"')
-    #             return []
-    #
-    #         list_message = await self.start_monitoring_chat(id_chat, link_chat)
-    #
-    #         if list_message == []:
-    #             print(f'{datetime.now().strftime("%H:%M:%S")} Начинаю подписку на канал {id_chat}')
-    #             res_join = await self.join_to_chat(link_chat)
-    #
-    #             if not res_join:
-    #                 return []
-    #
-    #             if res_join:
-    #                 print(f'{datetime.now().strftime("%H:%M:%S")} Успешно подписался на канал "{id_chat}"')
-    #
-    #         if list_message:
-    #             return list_message
-
     async def get_id_chat(self, name_link):
         try:
             name_chat = name_link.replace('https://t.me/', '')
 
-            res_chat = await self.app.get_chat(name_chat)
 
-            id_chat = res_chat.id
 
         except Exception as es:
-            print(f'Не могу получить ID чата "{name_link}" "{es}"')
+            print(f'Не могу получить вырезать имя чата "{name_link}" "{es}"')
 
             return False
 
-        return id_chat
+        while True:
+            try:
+                res_chat = await self.app.get_chat(name_chat)
+            except Exception as es:
+                print(f'Исключения при получение ID чат {es}')
+                return False
 
-    # async def start_monitoring(self):
-    #     """ТВХ"""
-    #
-    #     for link_chat in CHANNELS:
-    #         # for id_chat, _ in DATA_CHANELS.items():
-    #         """Итерация списка с каналами"""
-    #
-    #         id_chat = await self.get_id_chat(link_chat)
-    #
-    #         print(f'')
-    #         print(f'{datetime.now().strftime("%H:%M:%S")} Получаю сообщения из чата: {link_chat}')
-    #
-    #         await self.loop_start_check(id_chat, link_chat)
-    #
-    #     print(f'{datetime.now().strftime("%H:%M:%S")} Закончил мониторинг списка чатов')
-    #
-    #     return True
+            id_chat = res_chat.id
+
+            return id_chat
