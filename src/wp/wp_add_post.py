@@ -15,19 +15,28 @@ class WpAddPost:
         self.site_data = site_data
 
     def write_text_in_frame(self, value):
+        one_version = True
         try:
             _frame = self.driver.find_element(by=By.XPATH,
                                               value=f"//*[contains(@id, 'wp-content')]//iframe")
         except:
-            return False
+            try:
+                one_version = False
+                insert_element = self.driver.find_element(by=By.XPATH,
+                                                  value=f"//*[contains(@id, 'wp-content')]//textarea")
+            except:
+                return False
 
-        self.driver.switch_to.frame(_frame)
-        try:
-            insert_element = self.driver.find_element(by=By.XPATH,
-                                                      value=f"//body[contains(@id, 'tinymce')]/p")
-        except:
-            self.driver.switch_to.default_content()
-            return False
+        if one_version:
+
+            self.driver.switch_to.frame(_frame)
+
+            try:
+                insert_element = self.driver.find_element(by=By.XPATH,
+                                                          value=f"//body[contains(@id, 'tinymce')]/p")
+            except:
+                self.driver.switch_to.default_content()
+                return False
 
         try:
             insert_element.send_keys('\n')
@@ -35,24 +44,33 @@ class WpAddPost:
         except:
             pass
 
-        try:
-            self.driver.execute_script(
-                f'''
-                        const text = `{value}`;
-                        const dataTransfer = new DataTransfer();
-                        dataTransfer.setData('text', text);
-                        const event = new ClipboardEvent('paste', {{
-                          clipboardData: dataTransfer,
-                          bubbles: true
-                        }});
-                        arguments[0].dispatchEvent(event)
-                        ''',
-                insert_element)
-        except Exception as es:
-            print(f"Не смог вписать сообщение '{es}'")
-            return False
 
-        self.driver.switch_to.default_content()
+
+        if one_version:
+            try:
+                self.driver.execute_script(
+                    f'''
+                            const text = `{value}`;
+                            const dataTransfer = new DataTransfer();
+                            dataTransfer.setData('text', text);
+                            const event = new ClipboardEvent('paste', {{
+                              clipboardData: dataTransfer,
+                              bubbles: true
+                            }});
+                            arguments[0].dispatchEvent(event)
+                            ''',
+                    insert_element)
+            except Exception as es:
+                print(f"Не смог вписать сообщение '{es}'")
+                return False
+
+            self.driver.switch_to.default_content()
+        else:
+            self.driver.execute_script("""
+              var elm = arguments[0], txt = arguments[1];
+              elm.value += txt;
+              elm.dispatchEvent(new Event('change'));
+              """, insert_element, value)
 
         return True
 
@@ -227,12 +245,21 @@ class WpAddPost:
 
         return msg
 
+    def check_modal_popup(self):
+        try:
+            self.driver.find_element(by=By.XPATH, value=f"//*[contains(@role, 'document')]"
+                                                        f"//*[contains(@type, 'button')]").click()
+        except:
+            return False
+
+        return True
+
 
     def write_title(self, text):
         try:
             _text = text.split('\n')[0]
         except:
-            _text = text[:10]
+            _text = 'Новость'
 
         _text = self.formated_title(_text)
 

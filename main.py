@@ -33,13 +33,17 @@ async def main():
         dict_posts = await StartIterTgChat(telegram_core, BotDB, job_dict).start_iter()
 
         if not dict_posts:
-            telegram_core = await MonitoringTelegram(sessions_path, BotDB).start_tg()
+            try:
+                telegram_core = await MonitoringTelegram(sessions_path, BotDB).start_tg()
+            except:
+                return False
+
             continue
 
         count_post = sum([len(x['posts']) for x in dict_posts])
 
         if count_post == 0:
-            print(f'Новых постов для публикации нет. Ожиданию новых постов в Telegram')
+            print(f'Новых постов для публикации нет. Ожидание новых постов в Telegram')
             time.sleep(CHECK_EVERY * 60)
             continue
 

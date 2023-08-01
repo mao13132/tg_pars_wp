@@ -29,6 +29,8 @@ class WpStart:
         if not res_auth:
             return False
 
+        core_wp_post_adder.check_modal_popup()
+
         link_add_post = self.site_data['site'].split('/')
 
         link_add_post = f"https://{link_add_post[2]}/wp-admin/post-new.php"
@@ -50,8 +52,11 @@ class WpStart:
 
                 core_wp_post_adder.wait_load_media()
 
-            if 'jpg' in post['media'][0]:
-                res_image_preview = core_wp_post_adder.insert_image_preview(post['media'][0])
+            try:
+                if 'jpg' in post['media'][0]:
+                    res_image_preview = core_wp_post_adder.insert_image_preview(post['media'][0])
+            except:
+                pass
 
             if post['text'] != '':
                 res_write_text = core_wp_post_adder.write_text_in_frame(post['text'])
@@ -66,7 +71,7 @@ class WpStart:
             res_publish = core_wp_post_adder.check_publish()
 
             if res_publish:
-                print(f'Опубликовал запись на {self.site_data["site"]}')
+                print(f'Опубликовал запись {self.driver.current_url}')
 
         print(f'Закончил публикации на {self.site_data["site"]}')
 
