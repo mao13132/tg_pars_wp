@@ -2,6 +2,7 @@ from src.wp.auth_wp import AuthWP
 
 from src.wp.load_page import LoadPage
 from src.wp.wp_add_post import WpAddPost
+from telegram_debug import SendlerOneCreate
 
 
 class WpStart:
@@ -47,22 +48,28 @@ class WpStart:
             res_write_title = core_wp_post_adder.write_title(post['text'])
 
             if post['media'] != []:
-                print(f'Публикую медиа {self.site_data["site"]}')
+                print(f'Публикую медиа')
                 res_send_media = core_wp_post_adder.insert_image_universal(post['media'])
-
+                print(f'Публикация медиа статус: {res_send_media}')
                 core_wp_post_adder.wait_load_media()
 
             try:
                 if 'jpg' in post['media'][0]:
+                    print(f'Устанавливаю превью')
                     res_image_preview = core_wp_post_adder.insert_image_preview(post['media'][0])
+                    print(f'Установка превью: {res_image_preview}')
             except:
                 pass
 
             if post['text'] != '':
+                print(f'Пишу текст')
                 res_write_text = core_wp_post_adder.write_text_in_frame(post['text'])
+                print(f'Написание текста: {res_write_text}')
 
             if self.category != '':
-                res_insert_category = core_wp_post_adder.click_category(self.category)
+                print(f'Устанавливаю категорию')
+                res_insert_category = core_wp_post_adder.job_category(self.category)
+                print(f'Установка категории: {res_insert_category}')
 
             core_wp_post_adder.click_publish()
 

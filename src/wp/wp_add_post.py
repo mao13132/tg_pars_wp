@@ -6,6 +6,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 
+from selenium.webdriver.common.action_chains import ActionChains
+
+from telegram_debug import SendlerOneCreate
+
 
 class WpAddPost:
     def __init__(self, driver, BotDB, site_data):
@@ -19,11 +23,12 @@ class WpAddPost:
         try:
             _frame = self.driver.find_element(by=By.XPATH,
                                               value=f"//*[contains(@id, 'wp-content')]//iframe")
+            ActionChains(self.driver).move_to_element(_frame).perform()
         except:
             try:
                 one_version = False
                 insert_element = self.driver.find_element(by=By.XPATH,
-                                                  value=f"//*[contains(@id, 'wp-content')]//textarea")
+                                                          value=f"//*[contains(@id, 'wp-content')]//textarea")
             except:
                 return False
 
@@ -43,8 +48,6 @@ class WpAddPost:
             time.sleep(1)
         except:
             pass
-
-
 
         if one_version:
             try:
@@ -87,8 +90,17 @@ class WpAddPost:
 
     def click_add_media_preview(self):
         try:
-            self.driver.find_element(by=By.XPATH,
-                                     value=f"//*[contains(@id, 'postimagediv')]//a").click()
+            el = self.driver.find_element(by=By.XPATH,
+                                          value=f"//*[@id='postimagediv']//a")
+            # value=f"//*[contains(@id, 'postimagediv')]//a").click()
+
+        except:
+            return False
+
+        ActionChains(self.driver).move_to_element(el).perform()
+
+        try:
+            el.click()
 
         except:
             return False
@@ -188,19 +200,58 @@ class WpAddPost:
             except:
                 return True
 
-    def click_publish(self):
+    def check_close(self):
         try:
-            from selenium.webdriver.common.action_chains import ActionChains
-            el = self.driver.find_element(by=By.XPATH,
-                                          value=f"//div[@id='submitdiv']//*[@id='publishing-action']//*[@name='publish']")
-            ActionChains(self.driver).move_to_element(el).perform()
+            self.driver.find_element(by=By.XPATH,
+                                     value=f"//div[contains(@id, 'submitdiv') and contains(@class, 'closed')]"
+                                           f"//*[@id='publishing-action']//input[@name='publish']")
         except:
-            pass
+            return False
+
+        return True
+
+    def open_tulbar_publish(self):
+        try:
+            el = self.driver.find_element(by=By.XPATH,
+                                          value=f"//div[contains(@id, 'submitdiv') and contains(@class, 'closed')]"
+                                                f"//*[contains(text(), 'Опубликовать')]")
+        except:
+            return False
 
         try:
-            self.driver.find_element(by=By.XPATH, value=f"//div[@id='submitdiv']"
-                                                        f"//*[@id='publishing-action']//*[@name='publish']").click()
-            # self.driver.find_element(by=By.XPATH, value=f"//*[@id='publish']").click()
+            ActionChains(self.driver).move_to_element(el).perform()
+        except:
+            return False
+
+        try:
+            el.click()
+        except:
+            return False
+
+        return True
+
+    def click_publish(self):
+        from telegram_debug import SendlerOneCreate
+        SendlerOneCreate(self.driver).send_error_tg_img(f'Начинаю опубликовывать')
+        status_close = self.check_close()
+
+        if status_close:
+            self.open_tulbar_publish()
+
+        try:
+            el = self.driver.find_element(by=By.XPATH,
+                                          value=f"//div[@id='submitdiv']"
+                                                f"//*[@id='publishing-action']//*[@name='publish']")
+
+            ActionChains(self.driver).move_to_element(el).perform()
+
+        except:
+            return False
+
+        try:
+            # self.driver.find_element(by=By.XPATH, value=f"//div[@id='submitdiv']"
+            #                                             f"//*[@id='publishing-action']//*[@name='publish']").click()
+            el.click()
         except:
             return False
 
@@ -210,6 +261,8 @@ class WpAddPost:
             self.driver.switch_to.default_content()
         except:
             pass
+
+        SendlerOneCreate(self.driver).send_error_tg_img(f'')
 
         return True
 
@@ -224,15 +277,54 @@ class WpAddPost:
 
         return True
 
-    def click_category(self, value):
+    def check_close_category(self):
         try:
-            self.driver.find_element(by=By.XPATH, value=f"//*[contains(@id, 'taxonomy-category')]"
-                                                        f"//*[contains(text(), '{value}')]").click()
-            print(f'Установил категорию "{value}"')
+            el = self.driver.find_element(by=By.XPATH,
+                                          value=f"//div[contains(@id, 'categorydiv') and contains(@class, 'closed')]")
+            ActionChains(self.driver).move_to_element(el).perform()
         except:
             return False
 
         return True
+
+    def open_close_category(self):
+        try:
+            self.driver.find_element(by=By.XPATH,
+                                     value=f"//div[contains(@id, 'categorydiv') "
+                                           f"and contains(@class, 'closed')]").click()
+        except:
+            return False
+
+        return True
+
+    def click_category(self, value):
+        try:
+            el = self.driver.find_element(by=By.XPATH, value=f"//*[contains(@id, 'taxonomy-category')]"
+                                                             f"//*[contains(text(), '{value}')]")
+
+        except:
+            return False
+
+        ActionChains(self.driver).move_to_element(el).perform()
+
+        try:
+            el.click()
+        except:
+            return False
+
+        return True
+
+    def job_category(self, value):
+        status_category = self.check_close_category()
+
+        if status_category:
+            self.open_close_category()
+
+        SendlerOneCreate(self.driver).send_error_tg_img(f'Проверка категории')
+
+        res_set_category = self.click_category(value)
+
+        return res_set_category
 
     def formated_title(self, value):
         msg = ''
@@ -254,7 +346,6 @@ class WpAddPost:
 
         return True
 
-
     def write_title(self, text):
         try:
             _text = text.split('\n')[0]
@@ -267,8 +358,6 @@ class WpAddPost:
             self.driver.find_element(by=By.XPATH, value=f"//*[@name='post_title']").send_keys(_text)
         except:
             return False
-
-
 
         return True
 
@@ -295,19 +384,56 @@ class WpAddPost:
 
         return True
 
+    def check_close_preview(self):
+        try:
+            el = self.driver.find_element(by=By.XPATH,
+                                          value=f"//div[contains(@id, 'postimagediv') and contains(@class, 'closed')]")
+            ActionChains(self.driver).move_to_element(el).perform()
+        except:
+            return False
+
+        return True
+
+    def open_close_preview(self):
+        try:
+            self.driver.find_element(by=By.XPATH,
+                                     value=f"//div[contains(@id, 'postimagediv') "
+                                           f"and contains(@class, 'closed')]").click()
+        except:
+            return False
+
+        return True
+
     def insert_image_preview(self, images_list):
+
+        status_close = self.check_close_preview()
+
+        if status_close:
+            self.open_close_preview()
 
         res_add_images = self.click_add_media_preview()
 
+        SendlerOneCreate(self.driver).send_error_tg_img(f'')
+
         self.check_load_modal_preview()
+
+        SendlerOneCreate(self.driver).send_error_tg_img(f'')
 
         res_add_images = self.click_load_more()
 
+        SendlerOneCreate(self.driver).send_error_tg_img(f'')
+        time.sleep(2)
         res_insert = self._insert_image([images_list])
+
+        SendlerOneCreate(self.driver).send_error_tg_img(f'')
 
         res_wait_load = self.check_full_load()
 
+        SendlerOneCreate(self.driver).send_error_tg_img(f'')
+
         res_finish_button = self.click_button_preview()
+        time.sleep(2)
+        SendlerOneCreate(self.driver).send_error_tg_img(f'')
 
         return True
 

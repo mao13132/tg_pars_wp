@@ -1,14 +1,14 @@
 CHANNELS_AND_SITE = [
-
     {
-        'name': 'Кубинка',
-        'channels': ['https://t.me/Svetofor_Kubinka'],
+        'name': 'Дорохово',
+        'channels': ['https://t.me/SvetoforDorohovo'],
         'category': 'Светофор',
         'sites': [
             {
-                'site': 'https://kubinka-today.ru/v355/',
-                'login': 'Kubinkaadmin',
-                'password': '%9DdOWS5'
+                'site': 'https://dorohovo-online.ru/v355/',
+                'login': 'Anton',
+                'password': 'zhSeWpzuF)!DYGJucM22CX^K'
+
             }
         ]
     }
