@@ -1,14 +1,13 @@
 CHANNELS_AND_SITE = [
     {
-        'name': 'Дорохово',
-        'channels': ['https://t.me/SvetoforDorohovo'],
+        'name': 'Селятино',
+        'channels': ['https://t.me/SvetoforSelyatino'],
         'category': 'Светофор',
         'sites': [
             {
-                'site': 'https://dorohovo-online.ru/v355/',
-                'login': 'Anton',
+                'site': 'https://selyatino-life.ru/v355/',
+                'login': 'Nina',
                 'password': 'zhSeWpzuF)!DYGJucM22CX^K'
-
             }
         ]
     }

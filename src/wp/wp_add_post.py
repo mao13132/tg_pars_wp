@@ -230,42 +230,6 @@ class WpAddPost:
 
         return True
 
-    def click_publish(self):
-        from telegram_debug import SendlerOneCreate
-        SendlerOneCreate(self.driver).send_error_tg_img(f'Начинаю опубликовывать')
-        status_close = self.check_close()
-
-        if status_close:
-            self.open_tulbar_publish()
-
-        try:
-            el = self.driver.find_element(by=By.XPATH,
-                                          value=f"//div[@id='submitdiv']"
-                                                f"//*[@id='publishing-action']//*[@name='publish']")
-
-            ActionChains(self.driver).move_to_element(el).perform()
-
-        except:
-            return False
-
-        try:
-            # self.driver.find_element(by=By.XPATH, value=f"//div[@id='submitdiv']"
-            #                                             f"//*[@id='publishing-action']//*[@name='publish']").click()
-            el.click()
-        except:
-            return False
-
-        try:
-            alert_obj = self.driver.switch_to.alert
-            alert_obj.accept()
-            self.driver.switch_to.default_content()
-        except:
-            pass
-
-        SendlerOneCreate(self.driver).send_error_tg_img(f'')
-
-        return True
-
     def wait_load_media(self):
         try:
             time.sleep(10)
@@ -413,26 +377,84 @@ class WpAddPost:
 
         res_add_images = self.click_add_media_preview()
 
-        SendlerOneCreate(self.driver).send_error_tg_img(f'')
-
         self.check_load_modal_preview()
-
-        SendlerOneCreate(self.driver).send_error_tg_img(f'')
 
         res_add_images = self.click_load_more()
 
-        SendlerOneCreate(self.driver).send_error_tg_img(f'')
-        time.sleep(2)
         res_insert = self._insert_image([images_list])
-
-        SendlerOneCreate(self.driver).send_error_tg_img(f'')
 
         res_wait_load = self.check_full_load()
 
-        SendlerOneCreate(self.driver).send_error_tg_img(f'')
-
         res_finish_button = self.click_button_preview()
-        time.sleep(2)
+
+        return True
+
+    def check_load_preview(self):
+        try:
+            el = self.driver.find_element(by=By.XPATH,
+                                          value=f"//*[contains(text(), "
+                                                f"'Нажмите на изображение, чтобы изменить или обновить его')]")
+        except:
+            return False
+
+        return True
+
+    def loop_set_preview(self, images_list):
+        count = 0
+        count_try = 5
+        while True:
+            count += 1
+
+            if count > count_try:
+                print(f'Не смог выставить изображение на превью')
+                SendlerOneCreate(self.driver).send_error_tg_img(f'')
+                return False
+
+            res_load = self.check_load_preview()
+
+            if not res_load:
+                self.insert_image_preview(images_list)
+                if count > 1:
+                    time.sleep(1)
+
+                continue
+
+            SendlerOneCreate(self.driver).send_error_tg_img(f'')
+
+            return True
+
+    def click_publish(self):
+        from telegram_debug import SendlerOneCreate
+        SendlerOneCreate(self.driver).send_error_tg_img(f'Начинаю опубликовывать')
+        status_close = self.check_close()
+
+        if status_close:
+            self.open_tulbar_publish()
+
+        try:
+            el = self.driver.find_element(by=By.XPATH,
+                                          value=f"//div[@id='submitdiv']"
+                                                f"//*[@id='publishing-action']//*[@name='publish']")
+
+            ActionChains(self.driver).move_to_element(el).perform()
+
+        except:
+            return False
+
+        try:
+            # self.driver.find_element(by=By.XPATH, value=f"//div[@id='submitdiv']"
+            #                                             f"//*[@id='publishing-action']//*[@name='publish']").click()
+            el.click()
+        except:
+            return False
+
+        try:
+            alert_obj = self.driver.switch_to.alert
+            alert_obj.accept()
+            self.driver.switch_to.default_content()
+        except:
+            pass
+
         SendlerOneCreate(self.driver).send_error_tg_img(f'')
 
         return True
@@ -443,7 +465,6 @@ class WpAddPost:
         while True:
             count += 1
             if count > count_try:
-                print(f'Не могу подтвердить публикацию записи')
                 return False
 
             try:
@@ -451,5 +472,37 @@ class WpAddPost:
 
                 return True
             except:
-                time.sleep(1)
+                try:
+                    self.driver.find_element(by=By.XPATH,
+                                             value=f"//div[contains(@id, 'submitdiv')]"
+                                                   f"//input[contains(@value, 'Обновить')]")
+
+                    return True
+                except:
+                    time.sleep(1)
+                    continue
+
+    def loop_publish(self):
+        count = 0
+        count_try = 5
+        while True:
+            count += 1
+            if count > count_try:
+                print(f'Не смог опубликовать запись')
+                return False
+
+            res_click = self.click_publish()
+
+            res_publish = self.check_publish()
+
+            if not res_publish:
+                print(f'Не удачная попытка публикации, пробую ещё раз')
+                self.driver.refresh()
+
+                if count > 1:
+                    time.sleep(1)
+
                 continue
+
+            return True
+

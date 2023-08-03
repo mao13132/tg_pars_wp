@@ -56,7 +56,7 @@ class WpStart:
             try:
                 if 'jpg' in post['media'][0]:
                     print(f'Устанавливаю превью')
-                    res_image_preview = core_wp_post_adder.insert_image_preview(post['media'][0])
+                    res_image_preview = core_wp_post_adder.loop_set_preview(post['media'][0])
                     print(f'Установка превью: {res_image_preview}')
             except:
                 pass
@@ -71,11 +71,12 @@ class WpStart:
                 res_insert_category = core_wp_post_adder.job_category(self.category)
                 print(f'Установка категории: {res_insert_category}')
 
-            core_wp_post_adder.click_publish()
+            # core_wp_post_adder.click_publish()
 
             print(f'Публикую...')
 
-            res_publish = core_wp_post_adder.check_publish()
+            res_publish = core_wp_post_adder.loop_publish()
+            # res_publish = core_wp_post_adder.check_publish()
 
             if res_publish:
                 print(f'Опубликовал запись {self.driver.current_url}')
