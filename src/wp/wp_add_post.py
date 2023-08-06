@@ -1,5 +1,6 @@
 import os
 import time
+from datetime import datetime
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -134,6 +135,7 @@ class WpAddPost:
         while True:
             count += 1
             if count > count_try:
+                SendlerOneCreate(self.driver).send_error_tg_img(f'_no_modal')
                 print(f'Не смог открыть окно для загрузки медиафайлов')
                 return False
 
@@ -291,13 +293,26 @@ class WpAddPost:
         return res_set_category
 
     def formated_title(self, value):
+
+
+        try:
+            _text = value.split('\n')[0]
+        except:
+            return 'Новость ' + datetime.now().strftime("%H:%M:%S")
+
         msg = ''
-        for x in value:
+        for x in _text:
             if x.isalpha():
                 msg += x
             else:
                 if x == ' ':
                     msg += x
+
+        try:
+            if '  ' in msg:
+                msg = msg.replace('  ', ' ')
+        except:
+            pass
 
         return msg
 
@@ -311,19 +326,34 @@ class WpAddPost:
         return True
 
     def write_title(self, text):
-        try:
-            _text = text.split('\n')[0]
-        except:
-            _text = 'Новость'
-
-        _text = self.formated_title(_text)
 
         try:
-            self.driver.find_element(by=By.XPATH, value=f"//*[@name='post_title']").send_keys(_text)
+            self.driver.find_element(by=By.XPATH, value=f"//*[@name='post_title']").send_keys(text)
         except:
             return False
 
         return True
+
+    def check_draft(self, _text_title):
+
+        try:
+            el = self.driver.find_element(by=By.XPATH,
+                                          value=f"//*[contains(text(), '{_text_title}')]//parent::strong").text
+        except:
+            return False
+
+        if 'Черновик' in el:
+            return True
+
+        return False
+
+    def check_title_post(self, _xpatch):
+        try:
+            WebDriverWait(self.driver, 15).until(
+                EC.presence_of_element_located((By.XPATH, _xpatch)))
+            return True
+        except:
+            return False
 
     def insert_image_universal(self, images_list):
 
@@ -419,13 +449,13 @@ class WpAddPost:
 
                 continue
 
-            SendlerOneCreate(self.driver).send_error_tg_img(f'')
+            # SendlerOneCreate(self.driver).send_error_tg_img(f'')
 
             return True
 
     def click_publish(self):
         from telegram_debug import SendlerOneCreate
-        SendlerOneCreate(self.driver).send_error_tg_img(f'Начинаю опубликовывать')
+        # SendlerOneCreate(self.driver).send_error_tg_img(f'Начинаю опубликовывать')
         status_close = self.check_close()
 
         if status_close:
@@ -461,10 +491,11 @@ class WpAddPost:
 
     def check_publish(self):
         count = 0
-        count_try = 60
+        count_try = 20
         while True:
             count += 1
             if count > count_try:
+                print(f'Word Press завис на публикации')
                 return False
 
             try:
@@ -479,30 +510,12 @@ class WpAddPost:
 
                     return True
                 except:
-                    time.sleep(1)
+                    time.sleep(3)
                     continue
 
     def loop_publish(self):
-        count = 0
-        count_try = 5
-        while True:
-            count += 1
-            if count > count_try:
-                print(f'Не смог опубликовать запись')
-                return False
+        res_click = self.click_publish()
 
-            res_click = self.click_publish()
+        res_publish = self.check_publish()
 
-            res_publish = self.check_publish()
-
-            if not res_publish:
-                print(f'Не удачная попытка публикации, пробую ещё раз')
-                self.driver.refresh()
-
-                if count > 1:
-                    time.sleep(1)
-
-                continue
-
-            return True
-
+        return res_publish
