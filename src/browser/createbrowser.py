@@ -30,10 +30,10 @@ class CreatBrowser:
 
         if platform_to_os == "Linux":
             path_dir = (f'/Users/{user_system}/Library/Application Support/Google/Chrome/{name_profile}')
-            s = Service(r"browser/chromedriver.exe")
+            s = Service(r"src/browser/chromedriver.exe")
         else:
             path_dir = (f'C:\\Users\\{user_system}\\AppData\\Local\\Google\\Chrome\\User Data\\{name_profile}')
-            s = Service(f"browse\\chromedriver.exe")
+            s = Service(f"src\\browser\\chromedriver.exe")
 
         options.add_argument(f"user-data-dir={path_dir}")  # Path to your chrome profile
 
@@ -64,7 +64,7 @@ class CreatBrowser:
         try:
             browser_version = self.driver.capabilities['browserVersion']
             driver_version = self.driver.capabilities['chrome']['chromedriverVersion'].split(' ')[0]
-            print(f"Браузер: {browser_version} драйвер: {driver_version}")
+            print(f"Браузер: {browser_version} драйвер: {driver_version}\n")
         except:
             print(f'Не получилось определить версию uc браузера')
 

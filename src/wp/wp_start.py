@@ -38,85 +38,86 @@ class WpStart:
         link_add_post = f"https://{link_add_post[2]}/wp-admin/post-new.php"
 
         for post in self.posts_list:
+            try:
 
-            _text_title = core_wp_post_adder.formated_title(post['text'])
+                _text_title = post['title']
 
-            count_try = 0
-            # TODO цикл для перепроверки публикаций, анти дубль и гарант публикации
-            while True:
+                count_try = 0
 
-                count_try += 1
+                while True:
 
-                if count_try > 3:
-                    print(f'Все попытки на публикацию исчерпал. Пропускаю "{post["text"]}"')
-                    break
+                    count_try += 1
 
-                load_page = LoadPage(self.driver, link_add_post).loop_load_page(
-                    f"//*[contains(@class, 'clear')]")
+                    if count_try > 3:
+                        print(f'Все попытки на публикацию исчерпал. Пропускаю "{post["text"]}"')
+                        break
 
-                if not load_page:
-                    print(f'Не удалось зайти на {self.site_data["site"]}')
-                    return False
+                    load_page = LoadPage(self.driver, link_add_post).loop_load_page(
+                        f"//*[contains(@class, 'clear')]")
 
-                insert_title = core_wp_post_adder.write_title(_text_title)
+                    if not load_page:
+                        print(f'Не удалось зайти на {self.site_data["site"]}')
+                        return False
 
-                if post['media'] != []:
-                    print(f'Публикую медиа')
-                    res_send_media = core_wp_post_adder.insert_image_universal(post['media'])
-                    print(f'Публикация медиа статус: {res_send_media}')
-                    core_wp_post_adder.wait_load_media()
+                    insert_title = core_wp_post_adder.write_title(_text_title)
 
-                try:
-                    if 'jpg' in post['media'][0]:
-                        print(f'Устанавливаю превью')
-                        res_image_preview = core_wp_post_adder.loop_set_preview(post['media'][0])
-                        print(f'Установка превью: {res_image_preview}')
-                except:
-                    pass
+                    if post['media'] != []:
+                        print(f'Публикую медиа')
+                        res_send_media = core_wp_post_adder.insert_image_universal(post['media'])
+                        print(f'Публикация медиа статус: {res_send_media}')
+                        core_wp_post_adder.wait_load_media()
 
-                if post['text'] != '':
-                    print(f'Пишу текст')
-                    res_write_text = core_wp_post_adder.write_text_in_frame(post['text'])
-                    print(f'Написание текста: {res_write_text}')
+                    try:
+                        if 'jpg' in post['media'][0]:
+                            print(f'Устанавливаю превью')
+                            res_image_preview = core_wp_post_adder.loop_set_preview(post['media'][0])
+                            print(f'Установка превью: {res_image_preview}')
+                    except:
+                        pass
 
-                if self.category != '':
-                    print(f'Устанавливаю категорию')
-                    res_insert_category = core_wp_post_adder.job_category(self.category)
-                    print(f'Установка категории: {res_insert_category}')
+                    if post['text'] != '':
+                        print(f'Пишу текст')
+                        res_write_text = core_wp_post_adder.write_text_in_frame(post['text'])
+                        print(f'Написание текста: {res_write_text}')
 
-                print(f'\n--- Публикую "{_text_title}"\n')
+                    if self.category != '':
+                        print(f'Устанавливаю категорию')
+                        res_insert_category = core_wp_post_adder.job_category(self.category)
+                        print(f'Установка категории: {res_insert_category}')
 
-                res_publish = core_wp_post_adder.loop_publish()
+                    print(f'\n--- Публикую "{_text_title}"\n')
 
-                if res_publish:
-                    print(f'Опубликовал запись {self.driver.current_url}')
+                    res_publish = core_wp_post_adder.loop_publish()
 
-                    break
+                    if res_publish:
+                        print(f'Опубликовал запись {self.driver.current_url}')
 
-                print(f'Перепроверка публикации...')
+                        break
 
-                result_start_page = LoadPage(self.driver, link_all_posts).loop_load_page(
-                    f"//*[contains(text(), 'Поиск записей')]")
+                    print(f'Перепроверка публикации...')
 
-                check_post = core_wp_post_adder.check_title_post(f"//*[contains(text(), '{_text_title}')]")
+                    result_start_page = LoadPage(self.driver, link_all_posts).loop_load_page(
+                        f"//*[contains(text(), 'Поиск записей')]")
 
-                if not check_post:
-                    continue
+                    check_post = core_wp_post_adder.check_title_post(f"//*[contains(text(), '{_text_title}')]")
 
-                draft_true = core_wp_post_adder.check_draft(_text_title)
+                    if not check_post:
+                        continue
 
-                if draft_true:
-                    print(f'Найдена неопубликованная запись пробую опубликовать ещё раз')
-                    continue
+                    draft_true = core_wp_post_adder.check_draft(_text_title)
 
-                if check_post:
-                    print(f'Перепроверка записи: запись уже существует')
-                    break
+                    if draft_true:
+                        print(f'Найдена неопубликованная запись пробую опубликовать ещё раз')
+                        continue
 
-                # TODO перепроверку на дубль и черновик. По тайтлу insert_title https://nf-life.ru/wp-admin/edit.php
+                    if check_post:
+                        print(f'Перепроверка записи: запись уже существует')
+                        break
 
-                # result_start_page = LoadPage(self.driver, link_all_posts).loop_load_page(
-                #     f"//*[contains(text(), 'Поиск записей')]")
+                self.BotDB.add_message(post['chat_id'], _text_title, post['date_post'])
+            except Exception as es:
+                print(f'Пропуск поста из за возникновения проблем с сайтом. В базу не занёс "{es}"')
+                continue
 
         print(f'Закончил публикации на {self.site_data["site"]}')
 

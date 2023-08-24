@@ -142,6 +142,9 @@ class MonitoringTelegram:
         return good_media_list, text_message
 
     async def start_monitoring_chat(self, chat_id, link_chat):
+
+        stop_title_list = []
+
         id_media_list = []
 
         good_post = []
@@ -149,15 +152,7 @@ class MonitoringTelegram:
         count = 1
 
         async for message in self.app.get_chat_history(chat_id):
-            sql_res = self.BotDB.add_message(chat_id, message.id)
-
-            if not sql_res:
-                if good_post == []:
-                    print(f'{datetime.now().strftime("%H:%M:%S")} Новых сообщений нет {link_chat}')
-                else:
-                    print(f'{datetime.now().strftime("%H:%M:%S")} Все новые сообщения из чата {link_chat} обработаны')
-
-                return good_post
+            # sql_res = self.BotDB.add_message(chat_id, message.id)
 
             one_post = {}
 
@@ -186,8 +181,26 @@ class MonitoringTelegram:
             if not text_msg and good_media_list == []:
                 continue
 
+            from src.wp.formated_title import get_title
+            one_post['title'] = get_title(text_msg)
+
+            if one_post['title'] in stop_title_list:
+                continue
+
+            stop_title_list.append(one_post['title'])
+
+            one_post['date_post'] = message.date
+
+            sql_res = self.BotDB.exist_message(chat_id, one_post['title'], one_post['date_post'])
+
+            if sql_res:
+                count += 1
+
+                continue
+
             one_post['text'] = text_msg
             one_post['media'] = good_media_list
+            one_post['chat_id'] = chat_id
             one_post['source'] = link_chat
 
             good_post.append(one_post)

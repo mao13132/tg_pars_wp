@@ -26,7 +26,6 @@ class IterSite:
                 print(f'{site_data["site"]} нет постов к публикации')
                 continue
 
-
             res_add_posts = WpStart(self.driver, self.BotDB, site_data, job).start_job_wp()
 
         return job

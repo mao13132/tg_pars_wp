@@ -13,4 +13,7 @@ class SendlerOneCreate:
         import os
         filename = f'{msg}_screen{os.sep}{datetime.now().strftime("%H_%M_%S")}.png'
 
-        self.driver.save_screenshot(filename)
+        try:
+            self.driver.save_screenshot(filename)
+        except:
+            pass

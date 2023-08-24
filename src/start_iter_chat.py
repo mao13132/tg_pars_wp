@@ -9,7 +9,7 @@ class StartIterTgChat:
 
     async def start_iter(self):
         for job in self.job_dict:
-            print(f'Начинаю обработку {job["name"]}')
+            print(f'Начинаю обработку "{job["name"]}"')
 
             post_dict = await IterChat(self.telegram_core).get_posts(job)
 

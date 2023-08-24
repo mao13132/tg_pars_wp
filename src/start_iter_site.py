@@ -10,7 +10,7 @@ class StartIterSite:
     async def start_iter(self):
         #TODO итерация главных словарей
         for job in self.job_dict:
-            print(f'Начинаю обработку {job["name"]}')
+            print(f'Начинаю процедуру постинга: "{job["name"]}"')
 
             post_dict = await IterSite(self.driver, self.BotDB).write_post(job)
 

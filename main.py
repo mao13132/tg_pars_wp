@@ -49,6 +49,10 @@ async def main():
 
         browser_core = CreatBrowser()
 
+        if not browser_core:
+            print(f'Ошибка: не смог создать браузер')
+            return False
+
         dict_pw = await StartIterSite(browser_core.driver, BotDB, job_dict).start_iter()
 
         print(f'Закончил, делаю паузу. В ожидании новых постов в Telegram')

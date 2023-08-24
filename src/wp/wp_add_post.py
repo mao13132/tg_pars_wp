@@ -294,6 +294,7 @@ class WpAddPost:
 
     def formated_title(self, value):
 
+        white_keys = [',', '.']
 
         try:
             _text = value.split('\n')[0]
@@ -302,7 +303,7 @@ class WpAddPost:
 
         msg = ''
         for x in _text:
-            if x.isalpha():
+            if x.isdigit() or x.isalpha() or x in white_keys:
                 msg += x
             else:
                 if x == ' ':
@@ -313,6 +314,8 @@ class WpAddPost:
                 msg = msg.replace('  ', ' ')
         except:
             pass
+
+        msg = msg.strip()
 
         return msg
 
@@ -359,7 +362,10 @@ class WpAddPost:
 
         res_add_images = self.click_add_media_button()
 
-        self.check_load_modal_image()
+        check_pop = self.check_load_modal_image()
+
+        if not check_pop:
+            return False
 
         res_insert = self._insert_image(images_list)
 

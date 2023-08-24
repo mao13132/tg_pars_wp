@@ -10,7 +10,7 @@ class IterChat:
 
         for link_chat in job["channels"]:
             if link_chat == '':
-                print(f'Не указан телеграм канал донор')
+                print(f'Не указан телеграм канал донор - пропуск')
                 continue
 
             id_chat = await self.telegram_core.get_id_chat(link_chat)
