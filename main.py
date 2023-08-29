@@ -19,7 +19,18 @@ from src.telegram.monitoring_telegram import MonitoringTelegram
 logging.basicConfig(level=logging.CRITICAL)
 
 
+async def _clear():
+    import os
+
+    _dir = 'downloads'
+
+    if os.path.exists(_dir):
+
+        test = [os.remove(os.path.join(os.path.dirname(__file__), _dir, x)) for x in os.listdir(_dir)]
+
+
 async def main():
+
     sessions_path = os.path.join(os.path.dirname(__file__), 'src', 'sessions')
 
     telegram_core = await MonitoringTelegram(sessions_path, BotDB).start_tg()
@@ -58,6 +69,8 @@ async def main():
         print(f'Закончил, делаю паузу. В ожидании новых постов в Telegram')
 
         browser_core.driver.quit()
+
+        await _clear()
 
         time.sleep(CHECK_EVERY * 60)
 

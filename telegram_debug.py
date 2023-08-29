@@ -11,7 +11,7 @@ class SendlerOneCreate:
 
     def send_error_tg_img(self, msg=False):
         import os
-        filename = f'{msg}_screen{os.sep}{datetime.now().strftime("%H_%M_%S")}.png'
+        filename = f'screen{os.sep}{msg}_screen{datetime.now().strftime("%H_%M_%S")}.png'
 
         try:
             self.driver.save_screenshot(filename)

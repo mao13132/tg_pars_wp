@@ -35,7 +35,7 @@ class CreatBrowser:
             path_dir = (f'C:\\Users\\{user_system}\\AppData\\Local\\Google\\Chrome\\User Data\\{name_profile}')
             s = Service(f"src\\browser\\chromedriver.exe")
 
-        options.add_argument(f"user-data-dir={path_dir}")  # Path to your chrome profile
+        # options.add_argument(f"user-data-dir={path_dir}")  # Path to your chrome profile
 
         options.add_argument('--disable-dev-shm-usage')
 

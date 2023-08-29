@@ -10,9 +10,20 @@ class LoadPage:
         self.driver = driver
         self.source_name = url
 
+    def approve_close(self):
+        try:
+            alert_obj = self.driver.switch_to.alert
+            alert_obj.accept()
+            self.driver.switch_to.default_content()
+        except:
+            return False
+
+        return True
+
     def load_page(self, url):
         try:
             self.driver.get(url)
+            self.approve_close()
             return True
         except TimeoutException:
             return False

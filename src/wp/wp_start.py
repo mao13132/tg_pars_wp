@@ -2,6 +2,7 @@ from src.wp.auth_wp import AuthWP
 
 from src.wp.load_page import LoadPage
 from src.wp.wp_add_post import WpAddPost
+from telegram_debug import SendlerOneCreate
 
 
 class WpStart:
@@ -50,6 +51,9 @@ class WpStart:
 
                     if count_try > 3:
                         print(f'Все попытки на публикацию исчерпал. Пропускаю "{post["text"]}"')
+
+                        SendlerOneCreate(self.driver).send_error_tg_img(f'no_publish')
+
                         break
 
                     load_page = LoadPage(self.driver, link_add_post).loop_load_page(
@@ -57,6 +61,9 @@ class WpStart:
 
                     if not load_page:
                         print(f'Не удалось зайти на {self.site_data["site"]}')
+
+                        SendlerOneCreate(self.driver).send_error_tg_img(f'no_open')
+
                         return False
 
                     insert_title = core_wp_post_adder.write_title(_text_title)
@@ -67,11 +74,17 @@ class WpStart:
                         print(f'Публикация медиа статус: {res_send_media}')
                         core_wp_post_adder.wait_load_media()
 
+                        if not res_send_media:
+                            SendlerOneCreate(self.driver).send_error_tg_img(f'error_preview')
+
                     try:
                         if 'jpg' in post['media'][0]:
                             print(f'Устанавливаю превью')
                             res_image_preview = core_wp_post_adder.loop_set_preview(post['media'][0])
                             print(f'Установка превью: {res_image_preview}')
+
+                            if not res_image_preview:
+                                SendlerOneCreate(self.driver).send_error_tg_img(f'error_preview')
                     except:
                         pass
 
@@ -80,10 +93,16 @@ class WpStart:
                         res_write_text = core_wp_post_adder.write_text_in_frame(post['text'])
                         print(f'Написание текста: {res_write_text}')
 
+                        if not res_write_text:
+                            SendlerOneCreate(self.driver).send_error_tg_img(f'error_text')
+
                     if self.category != '':
                         print(f'Устанавливаю категорию')
                         res_insert_category = core_wp_post_adder.job_category(self.category)
                         print(f'Установка категории: {res_insert_category}')
+
+                        if not res_insert_category:
+                            SendlerOneCreate(self.driver).send_error_tg_img(f'error_category')
 
                     print(f'\n--- Публикую "{_text_title}"\n')
 
@@ -93,6 +112,8 @@ class WpStart:
                         print(f'Опубликовал запись {self.driver.current_url}')
 
                         break
+
+                    SendlerOneCreate(self.driver).send_error_tg_img(f'no_publish_iter')
 
                     print(f'Перепроверка публикации...')
 

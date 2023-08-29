@@ -193,7 +193,7 @@ class WpAddPost:
         count = 0
         while True:
             count += 1
-            if count > 60:
+            if count > 30:
                 return False
 
             try:
@@ -271,7 +271,11 @@ class WpAddPost:
         except:
             return False
 
-        ActionChains(self.driver).move_to_element(el).perform()
+        try:
+            self.driver.execute_script("scrollTo(0,200)")
+            ActionChains(self.driver).move_to_element(el).perform()
+        except:
+            pass
 
         try:
             el.click()
@@ -285,8 +289,6 @@ class WpAddPost:
 
         if status_category:
             self.open_close_category()
-
-        SendlerOneCreate(self.driver).send_error_tg_img(f'Проверка категории')
 
         res_set_category = self.click_category(value)
 
@@ -459,6 +461,16 @@ class WpAddPost:
 
             return True
 
+    def approve_close(self):
+        try:
+            alert_obj = self.driver.switch_to.alert
+            alert_obj.accept()
+            self.driver.switch_to.default_content()
+        except:
+            return False
+
+        return True
+
     def click_publish(self):
         from telegram_debug import SendlerOneCreate
         # SendlerOneCreate(self.driver).send_error_tg_img(f'Начинаю опубликовывать')
@@ -484,12 +496,7 @@ class WpAddPost:
         except:
             return False
 
-        try:
-            alert_obj = self.driver.switch_to.alert
-            alert_obj.accept()
-            self.driver.switch_to.default_content()
-        except:
-            pass
+        self.approve_close()
 
         SendlerOneCreate(self.driver).send_error_tg_img(f'')
 
@@ -497,7 +504,7 @@ class WpAddPost:
 
     def check_publish(self):
         count = 0
-        count_try = 20
+        count_try = 8
         while True:
             count += 1
             if count > count_try:
