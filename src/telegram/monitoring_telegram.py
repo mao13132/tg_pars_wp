@@ -71,35 +71,6 @@ class MonitoringTelegram:
 
         return msg
 
-    async def in_black(self, lower_msg):
-        for black in BLACKS:
-            if black.lower() in lower_msg:
-                return True
-
-        return False
-
-    async def check_msg_to_keybs(self, message):
-
-        for keyb in KEYBOARDS:
-
-            try:
-                lower_keyb = keyb.lower()
-                lower_msg = message.text.lower()
-            except:
-                lower_keyb = keyb
-                lower_msg = ''
-
-            if lower_keyb in lower_msg:
-
-                in_black = await self.in_black(lower_msg)
-
-                if in_black:
-                    continue
-
-                return keyb
-
-        return False
-
     async def _send_admin(self, msg):
         for admin_ in ADMIN:
 
@@ -141,7 +112,7 @@ class MonitoringTelegram:
 
         return good_media_list, text_message
 
-    async def start_monitoring_chat(self, chat_id, link_chat):
+    async def start_monitoring_chat(self, chat_id, link_chat, stop_date_post, main_stop_date):
 
         stop_title_list = []
 
@@ -153,6 +124,16 @@ class MonitoringTelegram:
 
         async for message in self.app.get_chat_history(chat_id):
             # sql_res = self.BotDB.add_message(chat_id, message.id)
+
+            date_post = message.date
+
+            if stop_date_post == '':
+                if main_stop_date != '':
+                    if date_post < main_stop_date:
+                        continue
+            else:
+                if date_post < stop_date_post:
+                    continue
 
             one_post = {}
 
@@ -189,7 +170,7 @@ class MonitoringTelegram:
 
             stop_title_list.append(one_post['title'])
 
-            one_post['date_post'] = message.date
+            one_post['date_post'] = date_post
 
             sql_res = self.BotDB.exist_message(chat_id, one_post['title'], one_post['date_post'])
 
@@ -206,7 +187,7 @@ class MonitoringTelegram:
             good_post.append(one_post)
 
             print(f'{datetime.now().strftime("%H:%M:%S")} #{count} '
-                  f'Обработал сообщение ID: {message.id}')
+                  f'Обработал сообщение ID: {message.id} от {date_post}')
 
             count += 1
 

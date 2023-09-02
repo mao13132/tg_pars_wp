@@ -5,3 +5,4 @@ __pycache__/
 downloads/
 src/browser/profile/
 screen/
+src/sessions/

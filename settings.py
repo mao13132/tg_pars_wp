@@ -3,6 +3,7 @@ CHANNELS_AND_SITE = [
         'name': 'Руза',
         'channels': ['https://t.me/SvetoforRuza'],
         'category': 'Светофор',
+        'date': '30.08.2023',
         'sites': [
             {
                 'site': 'https://ruza-today.ru/v355/',
@@ -15,6 +16,7 @@ CHANNELS_AND_SITE = [
         'name': 'Наро-Фоминск Московская',
         'channels': ['https://t.me/SvetoforNaroFominsk'],
         'category': 'Светофор Московская',
+        'date': '',
         'sites': [
             {
                 'site': 'https://nf-life.ru/v355/',
@@ -27,6 +29,7 @@ CHANNELS_AND_SITE = [
         'name': 'Наро-Фоминск Свободы',
         'channels': ['https://t.me/Svetofor_NaroFominsk_Svobody'],
         'category': 'Светофор Свободы',
+        'date': '',
         'sites': [
             {
                 'site': 'https://nf-life.ru/v355/',
@@ -39,6 +42,7 @@ CHANNELS_AND_SITE = [
         'name': 'Кубинка',
         'channels': ['https://t.me/Svetofor_Kubinka'],
         'category': 'Светофор',
+        'date': '',
         'sites': [
             {
                 'site': 'https://kubinka-today.ru/v355/',
@@ -51,6 +55,7 @@ CHANNELS_AND_SITE = [
         'name': 'Одинцово',
         'channels': ['https://t.me/SvetoforYudino'],
         'category': 'Светофор',
+        'date': '',
         'sites': [
             {
                 'site': 'https://odintsovo-today.ru/v355/',
@@ -63,6 +68,7 @@ CHANNELS_AND_SITE = [
         'name': 'Селятино',
         'channels': ['https://t.me/SvetoforSelyatino'],
         'category': 'Светофор',
+        'date': '',
         'sites': [
             {
                 'site': 'https://selyatino-life.ru/v355/',
@@ -75,6 +81,7 @@ CHANNELS_AND_SITE = [
         'name': 'Дорохово',
         'channels': ['https://t.me/SvetoforDorohovo'],
         'category': 'Светофор',
+        'date': '',
         'sites': [
             {
                 'site': 'https://dorohovo-online.ru/v355/',
@@ -88,6 +95,7 @@ CHANNELS_AND_SITE = [
         'name': 'Тучково',
         'channels': ['https://t.me/SvetoforTuchkovo'],
         'category': 'Светофор',
+        'date': '',
         'sites': [
             {
                 'site': 'https://tuchkovo-online.ru/v355/',
@@ -100,6 +108,7 @@ CHANNELS_AND_SITE = [
         'name': 'Сайт',
         'channels': [''],
         'category': '',
+        'date': '',
         'sites': [
             {
                 'site': '',
@@ -112,6 +121,7 @@ CHANNELS_AND_SITE = [
         'name': 'Сайт',
         'channels': [''],
         'category': '',
+        'date': '',
         'sites': [
             {
                 'site': '',
@@ -124,6 +134,7 @@ CHANNELS_AND_SITE = [
         'name': 'Сайт',
         'channels': [''],
         'category': '',
+        'date': '',
         'sites': [
             {
                 'site': '',
@@ -136,6 +147,7 @@ CHANNELS_AND_SITE = [
         'name': 'Сайт',
         'channels': [''],
         'category': '',
+        'date': '',
         'sites': [
             {
                 'site': '',
@@ -148,6 +160,7 @@ CHANNELS_AND_SITE = [
         'name': 'Сайт',
         'channels': [''],
         'category': '',
+        'date': '',
         'sites': [
             {
                 'site': '',
@@ -160,6 +173,7 @@ CHANNELS_AND_SITE = [
         'name': 'Сайт',
         'channels': [''],
         'category': '',
+        'date': '',
         'sites': [
             {
                 'site': '',
@@ -172,6 +186,7 @@ CHANNELS_AND_SITE = [
         'name': 'Сайт',
         'channels': [''],
         'category': '',
+        'date': '',
         'sites': [
             {
                 'site': '',
@@ -184,6 +199,7 @@ CHANNELS_AND_SITE = [
         'name': 'Сайт',
         'channels': [''],
         'category': '',
+        'date': '',
         'sites': [
             {
                 'site': '',
@@ -193,6 +209,8 @@ CHANNELS_AND_SITE = [
         ]
     }
 ]
+
+STOP_DATE = '1.09.2023'
 
 count_message_new_chat = 6  # ограничения на "глубину" сообщений в новом чате
 
